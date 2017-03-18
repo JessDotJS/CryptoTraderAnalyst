@@ -39,136 +39,124 @@ setInterval(function() {
             ref.set(price)
         });
     });
-}, 5000);
+}, 10000);
+
+
+
+
+
+
+var activeCoins = [
+    'BTC', 'ETH', 'DASH', 'XMR', 'ETC', 'REP',
+    'ZEC', 'STEEM', 'FCT', 'DGD', 'SDC', 'NVC'
+];
 
 
 /*
  * CoinMarketCap API
  * */
-
-
-//Bitcoin
 setInterval(function() {
     https.get({
         host: 'api.coinmarketcap.com',
-        path: '/v1/ticker/bitcoin/'
+        path: '/v1/ticker/'
     }, function(response) {
         var data = '';
         response.on('data', function(d) {
             data += d;
         });
         response.on('end', function() {
-            var ref = rootRef.child('marketReference/cryptoReference/BTC');
-            ref.set(buildCryptoReference(data))
+            try {
+                var res = JSON.parse(data);
+                for(var i = 0; i < res.length; i++){
+                    if(activeCoins.indexOf(res[i].symbol) != -1){
+                        var ref = rootRef.child('marketReference/cryptoReference/' + res[i].symbol);
+                        ref.set(buildCryptoReference(res[i]));
+                    }
+                }
+            } catch (e) {
+                return console.error(e);
+            }
+
         });
     });
 }, 10000);
 
-//Ethereum
-setInterval(function() {
-    https.get({
-        host: 'api.coinmarketcap.com',
-        path: '/v1/ticker/ethereum/'
-    }, function(response) {
-        var data = '';
-        response.on('data', function(d) {
-            data += d;
-        });
-        response.on('end', function() {
-            var ref = rootRef.child('marketReference/cryptoReference/ETH');
-            ref.set(buildCryptoReference(data))
-        });
-    });
-}, 10000);
 
-//Dash
-setInterval(function() {
-    https.get({
-        host: 'api.coinmarketcap.com',
-        path: '/v1/ticker/dash/'
-    }, function(response) {
-        var data = '';
-        response.on('data', function(d) {
-            data += d;
-        });
-        response.on('end', function() {
-            var ref = rootRef.child('marketReference/cryptoReference/DASH');
-            ref.set(buildCryptoReference(data))
-        });
-    });
-}, 10000);
-
-//REP
-setInterval(function() {
-    https.get({
-        host: 'api.coinmarketcap.com',
-        path: '/v1/ticker/augur/'
-    }, function(response) {
-        var data = '';
-        response.on('data', function(d) {
-            data += d;
-        });
-        response.on('end', function() {
-            var ref = rootRef.child('marketReference/cryptoReference/REP');
-            ref.set(buildCryptoReference(data))
-        });
-    });
-}, 10000);
-
-//ETC
-setInterval(function() {
-    https.get({
-        host: 'api.coinmarketcap.com',
-        path: '/v1/ticker/ethereum-classic/'
-    }, function(response) {
-        var data = '';
-        response.on('data', function(d) {
-            data += d;
-        });
-        response.on('end', function() {
-            var ref = rootRef.child('marketReference/cryptoReference/ETC');
-            ref.set(buildCryptoReference(data))
-        });
-    });
-}, 10000);
-
-//SDC
-setInterval(function() {
-    https.get({
-        host: 'api.coinmarketcap.com',
-        path: '/v1/ticker/shadowcash/'
-    }, function(response) {
-        var data = '';
-        response.on('data', function(d) {
-            data += d;
-        });
-        response.on('end', function() {
-            var ref = rootRef.child('marketReference/cryptoReference/SDC');
-            ref.set(buildCryptoReference(data))
-        });
-    });
-}, 10000);
 
 function buildCryptoReference(data){
-    var r = JSON.parse(data);
     return {
-        price: r[0]['price_usd'] || 0,
-        volume_24h: r[0]['24h_volume_usd'] || 0,
-        marketCapital: r[0]['market_cap_usd'] || 0,
-        supply: r[0]['available_supply'] || 0,
-        change_1h: r[0]['percent_change_1h'] || 0,
-        change_24h: r[0]['percent_change_24h'] || 0,
-        change_7d: r[0]['percent_change_7d'] || 0
+        price: data['price_usd'] || 0,
+        volume_24h: data['24h_volume_usd'] || 0,
+        marketCapital: data['market_cap_usd'] || 0,
+        supply: data['available_supply'] || 0,
+        change_1h: data['percent_change_1h'] || 0,
+        change_24h: data['percent_change_24h'] || 0,
+        change_7d: data['percent_change_7d'] || 0
     }
 }
-
-
 
 /*
  * Shapeshift API
  * */
 
+setInterval(function() {
+    var selectedCoin = '';
+    var pairCoin = '';
+    for(var i = 0; i < activeCoins.length; i++){
+        selectedCoin = activeCoins[i];
+        for(var x = 0; x < activeCoins.length; x++){
+            pairCoin = activeCoins[x];
+            if(selectedCoin != pairCoin){
+                try {
+                    setCryptoRate(selectedCoin + '_' + pairCoin);
+                } catch (e) {
+                    console.log(e);
+                }
+            }
+        }
+    }
+}, 30000);
 
+
+function setCryptoRate(pair){
+    https.get({
+        host: 'shapeshift.io',
+        path: '/marketInfo/' + pair
+    }, function(response) {
+        var data = '';
+        response.on('data', function(d) {
+            data += d;
+        });
+        response.on('end', function() {
+            var ref = rootRef.child('marketReference/cryptoExchange/' + pair);
+            try {
+                ref.set(buildCryptoRate(data))
+            } catch (e) {
+                return console.log(e);
+            }
+        });
+    });
+};
+
+
+
+function buildCryptoRate(data){
+    try {
+        var r = JSON.parse(data);
+        return {
+            rate: r['rate'] || null,
+            minerFee: r['minerFee'] || null,
+            limit: r['limit'] || null,
+            minimum: r['minimum'] || null,
+            maxLimit: r['maxLimit'] || null
+        }
+    } catch (e) {
+        console.log(e);
+        return null;
+    }
+}
+
+/*
 //BTC -> ALT
 setInterval(function() {
     https.get({
@@ -690,23 +678,14 @@ setInterval(function() {
     });
 }, 2000);
 
+*/
 
-function buildCryptoRate(data){
-    var r = JSON.parse(data);
-    return {
-        rate: r['rate'] || 0,
-        minerFee: r['minerFee'] || 0,
-        limit: r['limit'] || 0,
-        minimum: r['minimum'] || 0,
-        maxLimit: r['maxLimit'] || 0
-    }
-}
 
 
 
 
 /*
- * Shapeshift API
+ * Latest Transactions API
  * */
 
 setInterval(function() {
