@@ -48,7 +48,8 @@ setInterval(function() {
 
 var activeCoins = [
     'BTC', 'ETH', 'DASH', 'XMR', 'ETC', 'REP',
-    'ZEC', 'STEEM', 'FCT', 'DGD', 'SDC', 'NVC'
+    'ZEC', 'STEEM', 'FCT', 'DGD', 'SDC', 'NVC',
+    'CLAM', 'LSK', 'GNT'
 ];
 
 
