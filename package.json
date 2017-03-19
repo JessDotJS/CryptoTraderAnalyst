@@ -5,7 +5,7 @@
     "url": "https://JessDotJS@bitbucket.org/atomiccoin/atomic-crypto-coin-fetcher-1.0.git"
   },
   "scripts": {
-    "start" : "node main.js"
+    "start" : "forever main.js"
   },
   "version": "1.0.0",
   "description": "Atomic Crypto Coin",

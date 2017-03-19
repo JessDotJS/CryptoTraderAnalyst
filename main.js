@@ -102,59 +102,101 @@ function buildCryptoReference(data){
 setInterval(function() {
     var selectedCoin = '';
     var pairCoin = '';
+    var pairs = [];
     for(var i = 0; i < activeCoins.length; i++){
         selectedCoin = activeCoins[i];
         for(var x = 0; x < activeCoins.length; x++){
             pairCoin = activeCoins[x];
             if(selectedCoin != pairCoin){
-                try {
-                    setCryptoRate(selectedCoin + '_' + pairCoin);
-                } catch (e) {
-                    console.log(e);
-                }
+                pairs.push(selectedCoin + '_' + pairCoin);
             }
         }
     }
-}, 30000);
+    setCryptoRates(pairs);
+}, 6000);
 
 
-function setCryptoRate(pair){
+function setCryptoRates(pairs){
     https.get({
         host: 'shapeshift.io',
-        path: '/marketInfo/' + pair
+        path: '/marketInfo/'
     }, function(response) {
         var data = '';
         response.on('data', function(d) {
             data += d;
         });
         response.on('end', function() {
-            var ref = rootRef.child('marketReference/cryptoExchange/' + pair);
-            try {
-                ref.set(buildCryptoRate(data))
-            } catch (e) {
-                return console.log(e);
-            }
+
+            deployCryptoRatesData(pairs, data)
         });
     });
 };
 
 
+function deployCryptoRatesData(pairs, data){
+    var rates = {};
 
-function buildCryptoRate(data){
     try {
         var r = JSON.parse(data);
-        return {
-            rate: r['rate'] || null,
-            minerFee: r['minerFee'] || null,
-            limit: r['limit'] || null,
-            minimum: r['minimum'] || null,
-            maxLimit: r['maxLimit'] || null
+
+        //console.log(r.length);
+        for(var i = 0; i < pairs.length; i++){
+
+            for(var x = 0; x < r.length; x++){
+
+                if(r[x] != undefined){
+
+                    if(r[x].pair == pairs[i]){
+
+                        if(r[x]['rate'] != undefined && r[x]['minerFee'] != undefined){
+
+                            var ref = rootRef.child('marketReference/cryptoExchange/' + pairs[i]);
+                            ref.update({
+                                rate: r[x]['rate'] || 0,
+                                minerFee: r[x]['minerFee'] || 0,
+                                limit: r[x]['limit'] || 0,
+                                minimum: r[x]['minimum'] || 0,
+                                maxLimit: r[x]['maxLimit'] || 0
+                            });
+                        }
+                    }
+                }
+
+            }
         }
+        return rates;
     } catch (e) {
         console.log(e);
         return null;
     }
 }
+
+
+/*function setCryptoRates(pair, sleep){
+    setTimeout(function () {
+        https.get({
+            host: 'shapeshift.io',
+            path: '/marketInfo/' + pair
+        }, function(response) {
+            var data = '';
+            response.on('data', function(d) {
+                data += d;
+            });
+            response.on('end', function() {
+                var ref = rootRef.child('marketReference/cryptoExchange/' + pair);
+                try {
+                    ref.set(buildCryptoRate(data))
+                } catch (e) {
+                    return console.log(e);
+                }
+            });
+        });
+    }, sleep);
+};*/
+
+
+
+
 
 /*
 //BTC -> ALT
