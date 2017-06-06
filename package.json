@@ -5,7 +5,7 @@
     "url": "https://JessDotJS@bitbucket.org/atomiccoin/cryptotrader.git"
   },
   "scripts": {
-    "start" : "node main.js"
+    "start": "node main.js"
   },
   "version": "1.0.0",
   "description": "Crypto Trader",
@@ -14,6 +14,7 @@
   "author": "Jesus Graterol",
   "license": "ISC",
   "dependencies": {
+    "autobahn": "^17.5.2",
     "crypto": "0.0.3",
     "firebase": "^3.7.2",
     "fs": "0.0.1-security",
