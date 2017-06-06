@@ -1,14 +1,14 @@
 {
-  "name": "atomicryptofetcher",
+  "name": "cryptotraderanalyst",
   "repository": {
     "type": "git",
-    "url": "https://JessDotJS@bitbucket.org/atomiccoin/atomic-crypto-coin-fetcher-1.0.git"
+    "url": "https://JessDotJS@bitbucket.org/atomiccoin/cryptotrader.git"
   },
   "scripts": {
-    "start" : "forever main.js"
+    "start" : "node main.js"
   },
   "version": "1.0.0",
-  "description": "Atomic Crypto Coin",
+  "description": "Crypto Trader",
   "main": "main.js",
   "keywords": [],
   "author": "Jesus Graterol",
