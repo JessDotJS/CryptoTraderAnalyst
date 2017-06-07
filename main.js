@@ -4,7 +4,7 @@ var config = require("./serviceAccountKey"); //Firebase config data
 
 firebase.initializeApp(config); //Initializing firebase
 //var rootRef = firebase.database().ref();
-var orderBookRef = firebase.database().ref("poloniex/orderbook");
+var orderBookRef = firebase.database().ref("poloniex/orderbooks");
 
 var cryptoCurrency = ['BTC_XRP','BTC_ETH','BTC_FCT','BTC_XMR','BTC_STR','BTC_MAID','BTC_LTC','BTC_DOGE','BTC_DASH','BTC_BTS','BTC_CLAM'];
 
