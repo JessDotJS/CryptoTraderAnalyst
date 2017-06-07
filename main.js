@@ -16,20 +16,70 @@ var connection = new autobahn.Connection({
 });
 
 
-
 connection.onopen = function (session) {
-    function marketEvent (args,kwargs) {
-        console.log(args);
-
-        sendData(args,cryptoCurrency[1]);
-    }/*
+     /*
     function tickerEvent (args,kwargs) {
         console.log(args);
     }*/
     /*function trollboxEvent (args,kwargs) {
         console.log(args);
     }*/
-    session.subscribe(cryptoCurrency[1], marketEvent);
+        session.subscribe(cryptoCurrency[0], function marketEvent (args,kwargs) {
+            //console.log(cryptoCurrency[i]);
+            console.log(args);
+            sendData(args,cryptoCurrency[0]);
+        });
+        session.subscribe(cryptoCurrency[1], function marketEvent (args,kwargs) {
+            //console.log(cryptoCurrency[i]);
+            console.log(args);
+            sendData(args,cryptoCurrency[1]);
+        });
+        session.subscribe(cryptoCurrency[2], function marketEvent (args,kwargs) {
+            //console.log(cryptoCurrency[i]);
+            console.log(args);
+            sendData(args,cryptoCurrency[2]);
+        });
+        session.subscribe(cryptoCurrency[3], function marketEvent (args,kwargs) {
+            //console.log(cryptoCurrency[i]);
+            console.log(args);
+            sendData(args,cryptoCurrency[3]);
+        });
+        session.subscribe(cryptoCurrency[4], function marketEvent (args,kwargs) {
+            //console.log(cryptoCurrency[i]);
+            console.log(args);
+            sendData(args,cryptoCurrency[4]);
+        });
+        session.subscribe(cryptoCurrency[5], function marketEvent (args,kwargs) {
+            //console.log(cryptoCurrency[i]);
+            console.log(args);
+            sendData(args,cryptoCurrency[5]);
+        });
+        session.subscribe(cryptoCurrency[6], function marketEvent (args,kwargs) {
+            //console.log(cryptoCurrency[i]);
+            console.log(args);
+            sendData(args,cryptoCurrency[6]);
+        });
+        session.subscribe(cryptoCurrency[7], function marketEvent (args,kwargs) {
+            //console.log(cryptoCurrency[i]);
+            console.log(args);
+            sendData(args,cryptoCurrency[7]);
+        });
+        session.subscribe(cryptoCurrency[8], function marketEvent (args,kwargs) {
+            //console.log(cryptoCurrency[i]);
+            console.log(args);
+            sendData(args,cryptoCurrency[8]);
+        });
+        session.subscribe(cryptoCurrency[9], function marketEvent (args,kwargs) {
+            //console.log(cryptoCurrency[i]);
+            console.log(args);
+            sendData(args,cryptoCurrency[9]);
+        });
+        session.subscribe(cryptoCurrency[10], function marketEvent (args,kwargs) {
+            //console.log(cryptoCurrency[i]);
+            console.log(args);
+            sendData(args,cryptoCurrency[10]);
+        });
+
     /*session.subscribe('ticker', tickerEvent);*/
     //session.subscribe('trollbox', trollboxEvent);
 }
@@ -69,7 +119,6 @@ var sendData = function(data_p,currency){ //Func que enviara data a firebase
         switch(temp.type){
           case 'orderBookModify':
             console.log ("modif");
-            // rootRef.push({ name:"Lesther", email: "eel@gmail.com" });
             break;
           case 'orderBookRemove':
             console.log("remove");
@@ -77,7 +126,8 @@ var sendData = function(data_p,currency){ //Func que enviara data a firebase
           case 'newTrade':
             console.log("Trade");
             //console.log({ amount:data.amount, date:data.date,total:data.total,tradeID:data.tradeID, type: data.type });
-            orderBookRef.child("trades"+"/"+currency).push({ amount:data.amount, date:data.date,total:data.total,tradeID:data.tradeID, type: data.type });
+            console.log(currency+"/trades");
+            orderBookRef.child(currency+"/trades").push({ amount:data.amount, date:data.date,total:data.total,tradeID:data.tradeID, type: data.type });
             break;
           default:
             console.log("ERROR");
@@ -85,9 +135,13 @@ var sendData = function(data_p,currency){ //Func que enviara data a firebase
     }
 }
 
-//sendData(ee);
+/*
+    for (var i = 0 ; i < cryptoCurrency.length; i++) {
+        
+        console.log(cryptoCurrency[i]);
+    }
 
-
+*/
 
 
 
