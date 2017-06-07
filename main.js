@@ -90,24 +90,7 @@ connection.onclose = function () {
 }
 
 
-
-
 connection.open();
-
-
-
-// DATA DE EJEMPLO
-var ee =[ { type: 'orderBookModify',
-    data: { type: 'ask', rate: '0.09000012', amount: '0.88260028' } },
-  { type: 'newTrade',
-    data:
-     { amount: '6.83090558',
-       date: '2017-06-06 12:24:17',
-       rate: '0.09000012',
-       total: '0.61478232',
-       tradeID: '26659710',
-       type: 'buy' } } ];
-
 
 
 
@@ -134,14 +117,6 @@ var sendData = function(data_p,currency){ //Func que enviara data a firebase
         }
     }
 }
-
-/*
-    for (var i = 0 ; i < cryptoCurrency.length; i++) {
-        
-        console.log(cryptoCurrency[i]);
-    }
-
-*/
 
 
 
